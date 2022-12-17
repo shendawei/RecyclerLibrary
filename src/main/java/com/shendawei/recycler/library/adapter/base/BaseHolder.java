@@ -52,7 +52,7 @@ public abstract class BaseHolder<T, Cb extends HolderCallback> extends RecyclerV
         if (child == null) {
             child = itemView.findViewById(viewId);
             if (child == null) {
-                throw new RuntimeException("Can't find child view of viewId : " + viewId + " in OrBaseHolder!");
+                throw new RuntimeException("Can't find child view of viewId : " + viewId + " in BaseHolder!");
             }
             views.put(viewId, child);
         }

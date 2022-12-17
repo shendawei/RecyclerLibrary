@@ -9,7 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * BaseRecyclerAdapter
+ * 支持功能
+ * 数据源：普通T
+ * 事件回调：HolderCallback子接口，传递给holder调用；在adapter创建时声明，一般由activity或Fragment或Dialog实现。
+ * holder
+ *  正常创建方式：因内置Factory机制，通过{@link #generateFactories()}
+ *  手动创建方式：子类onCreateViewHolder，传统方式new holder
+ * 基本方法：【增】【删】【改】维护
  *
  * 注意事项
  * adapter插入或删除item后需调用notifyItemRangeChanged，更新变化的item信息；
@@ -21,9 +27,9 @@ import java.util.List;
  * @description
  * @date 2020/5/15 10:28
  */
-public abstract class BaseRecyclerAdapter<T, V extends BaseHolder<T, HCb>, HCb extends HolderCallback> extends RecyclerView.Adapter<V> {
+public abstract class BaseRecyclerAdapter<T, V extends BaseHolder<? extends T, HCb>, HCb extends HolderCallback> extends RecyclerView.Adapter<V> {
 
-    protected SparseArray<V.Factory<T, HCb>> mFactories;
+    protected SparseArray<V.Factory<? extends T, HCb>> mFactories;
     protected List<T> mDataSource;
     protected HCb mHolderCb;
 
@@ -34,6 +40,10 @@ public abstract class BaseRecyclerAdapter<T, V extends BaseHolder<T, HCb>, HCb e
         mHolderCb = hcb;
     }
 
+    /**
+     * 子类实现
+     * 创建需要的Factory，用以快速createHolder
+     */
     protected abstract void generateFactories();
 
     @Override

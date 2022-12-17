@@ -1,6 +1,5 @@
 package com.shendawei.recycler.library.adapter.style;
 
-import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -10,38 +9,45 @@ import com.shendawei.recycler.library.adapter.base.BaseRecyclerAdapter;
 import java.util.List;
 
 /**
- * *
+ * 支持功能
+ * 数据源：StyleModel<?>类
+ * 事件回调：StyleCallback子接口，传递给StyleHolder子类调用；在adapter创建时声明，一般由activity或Fragment或Dialog实现。
+ * holder
+ *  正常创建方式：因内置Factory机制，通过{@link #generateFactories()}
+ *  手动创建方式：子类onCreateViewHolder，传统方式new holder
+ * 基本方法：【增】【删】【改】维护
  *
  * @author shendawei
  * @classname AbsStyleAdapter
  * @date 12/14/22 1:33 AM
  */
-public abstract class AbsStyleAdapter<T extends StyleModel<?>, V extends StyleHolder<T, S>, S extends StyleCallback> extends BaseRecyclerAdapter<T, V, S> {
+public abstract class AbsStyleAdapter<S extends StyleCallback> extends BaseRecyclerAdapter<StyleModel<?>, StyleHolder<StyleModel<?>, S>, S> {
 
-    protected SparseArray<StyleHolder.Factory<T, S>> mFactories;
+    //mFactories = null
+    //BaseRecyclerAdapter.mFactories = "{}"
+//    protected SparseArray<StyleHolder.Factory<? extends StyleModel<?>, S>> mFactories = new SparseArray<>();
 
     public AbsStyleAdapter(S hcb) {
         super(hcb);
     }
 
-    @SuppressWarnings("unchecked")
     @NonNull
     @Override
-    public V onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        StyleHolder.Factory<T, S> factory = mFactories.get(viewType);
+    public StyleHolder<StyleModel<?>, S> onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        StyleHolder.Factory<StyleModel<?>, S> factory = (StyleHolder.Factory<StyleModel<?>, S>) mFactories.get(viewType);
         if (factory == null) {
             throw new RuntimeException("No factory found with type equals " + viewType);
         }
-        return (V) factory.createViewHolder(parent, viewType, mHolderCb);
+        return factory.createViewHolder(parent, viewType, mHolderCb);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull V holder, int position) {
+    public void onBindViewHolder(@NonNull StyleHolder<StyleModel<?>, S> holder, int position) {
         holder.bindData(mDataSource.get(position), position);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull V holder, int position, @NonNull List<Object> payloads) {
+    public void onBindViewHolder(@NonNull StyleHolder<StyleModel<?>, S> holder, int position, @NonNull List<Object> payloads) {
         if (payloads.isEmpty()) {
             onBindViewHolder(holder, position);
         } else {
@@ -53,7 +59,7 @@ public abstract class AbsStyleAdapter<T extends StyleModel<?>, V extends StyleHo
 
     @Override
     public int getItemViewType(int position) {
-        T model = mDataSource.get(position);
+        StyleModel<?> model = mDataSource.get(position);
         return model != null ? model.itemType : super.getItemViewType(position);
     }
 }

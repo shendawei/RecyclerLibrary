@@ -3,6 +3,7 @@ package com.shendawei.recycler.library.adapter.style;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -133,7 +134,8 @@ public abstract class StyleHolder<T extends StyleModel<?>, Cb extends StyleCallb
     public abstract static class Factory<T extends StyleModel<?>, C extends StyleCallback> extends BaseHolder.Factory<T, C> {
         @Override
         public StyleHolder<T, C> createViewHolder(ViewGroup parent, int viewType, C holderCallback) {
-            return (StyleHolder<T, C>) super.createViewHolder(parent, viewType, holderCallback);
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            return onCreateViewHolder(layoutInflater.inflate(getLayoutId(), parent, false), holderCallback);
         }
 
         @NonNull
